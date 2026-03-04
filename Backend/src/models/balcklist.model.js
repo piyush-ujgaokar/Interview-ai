@@ -2,7 +2,7 @@ const mongoose=require('mongoose')
 
 
 
-const blacklistTokenSchema=mongoose.Schema({
+const blacklistTokenSchema=new mongoose.Schema({
     token:{
         type:String,
         required:[true,"Token is Required to be Added in Blacklist"]
