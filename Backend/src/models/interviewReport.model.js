@@ -75,6 +75,11 @@ const interviewReportSchema=new mongoose.Schema({
         resume:{
             type:String
         },
+        matchScore:{
+            type:Number,
+            min:0,
+            max:100
+        },  
         techinicalQuestion:[techinicalQuestionSchema],
         behavioralQuestion:[behavioralQuestionSchema],
         skilGaps:[skillGapSchema],
