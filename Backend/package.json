@@ -1,4 +1,5 @@
 {
+  "type": "commonjs",
   "dependencies": {
     "@google/genai": "^1.43.0",
     "bcryptjs": "^3.0.3",

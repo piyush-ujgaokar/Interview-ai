@@ -59,7 +59,6 @@ Rajiv Gandhi Technical University | 2015 – 2019
 
 `
 
-
 const selfDescription=`
 
 PROFESSIONAL SUMMARY
