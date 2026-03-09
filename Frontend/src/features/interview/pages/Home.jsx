@@ -10,7 +10,7 @@ const Home = () => {
           <textarea  className='jobDescription' name="" id="jobDescription" placeholder='Enter job Description here....'></textarea>
         </div>
         <div className="right">
-          <p>Resume <small className='highlight'>(Use Resume and Self Description together For Better result)</small></p>
+          <p>Resume <small className='highlight'>(Use Resume Self Description together For Better result)</small></p>
           <div className="input-group">
             <label className='file-label' htmlFor="resume">Upload Resume</label>
             <input hidden type="file" name='resume' id='resume' accept='.pdf' />
