@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Backend/.env
 Backend/node_modules
 node_modules
@@ -6,3 +7,6 @@ dist
 build
 logs
 *.log
+=======
+Backend/.env
+>>>>>>> d4d00cd07d6844c27829c266566da4df1177e742

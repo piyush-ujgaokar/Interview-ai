@@ -9,16 +9,23 @@
     translate: all 1.2s ease-in-out;
 
     &.primary-button{
+<<<<<<< HEAD
         background-color: #134980ae;
         color: whitesmoke;
+=======
+        background-color: rgba(80, 199, 15, 0.445);
+>>>>>>> d4d00cd07d6844c27829c266566da4df1177e742
     }
 
     &:active{
         transform: scale(1.05);
     }
+<<<<<<< HEAD
 }
 
 
 .highlight{
     color: rgb(36, 133, 75);
+=======
+>>>>>>> d4d00cd07d6844c27829c266566da4df1177e742
 }

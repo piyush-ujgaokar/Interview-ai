@@ -2,12 +2,20 @@ const mongoose=require('mongoose')
 
 
 
+<<<<<<< HEAD
 const technicalQuestionSchema=new mongoose.Schema({
+=======
+const techinicalQuestionSchema=new mongoose.Schema({
+>>>>>>> d4d00cd07d6844c27829c266566da4df1177e742
     question:{
         type:String,
         required:[true,"Technical Question is Required"]
     },
+<<<<<<< HEAD
     intention:{
+=======
+    intension:{
+>>>>>>> d4d00cd07d6844c27829c266566da4df1177e742
         type:String,
         required:[true,"Intention is Required"]
     },
@@ -20,12 +28,21 @@ const technicalQuestionSchema=new mongoose.Schema({
 })
 
 
+<<<<<<< HEAD
 const behaviouralQuestionSchema=new mongoose.Schema({
       question:{
         type:String,
         required:[true,"Behavioral Question is Required"]
     },
     intention:{
+=======
+const behavioralQuestionSchema=new mongoose.Schema({
+      question:{
+        type:String,
+        required:[true,"Technical Question is Required"]
+    },
+    intension:{
+>>>>>>> d4d00cd07d6844c27829c266566da4df1177e742
         type:String,
         required:[true,"Intention is Required"]
     },
@@ -80,6 +97,7 @@ const interviewReportSchema=new mongoose.Schema({
             min:0,
             max:100
         },  
+<<<<<<< HEAD
         technicalQuestions:[technicalQuestionSchema],
         behaviouralQuestions:[behaviouralQuestionSchema],
         skillGaps:[skillGapSchema],
@@ -88,13 +106,23 @@ const interviewReportSchema=new mongoose.Schema({
             type:mongoose.Schema.Types.ObjectId,
             ref:"users"
         }
+=======
+        techinicalQuestion:[techinicalQuestionSchema],
+        behavioralQuestion:[behavioralQuestionSchema],
+        skilGaps:[skillGapSchema],
+        preparationPlan:[preparationPlanSchema]
+>>>>>>> d4d00cd07d6844c27829c266566da4df1177e742
 
 },{
     timestamps:true
 })
 
 
+<<<<<<< HEAD
 const interviewReportModel=mongoose.model("interviewReport",interviewReportSchema)
+=======
+const interviewReportModel=mongoose.Model("interviewReport",interviewReportSchema)
+>>>>>>> d4d00cd07d6844c27829c266566da4df1177e742
 
 
 module.exports=interviewReportModel

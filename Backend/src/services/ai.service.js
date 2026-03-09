@@ -127,11 +127,14 @@ preparationPlan MUST be:
 
 Return only JSON. Do not convert objects to strings.
 
+<<<<<<< HEAD
 Do NOT output placeholder tokens such as the literal words
 'question', 'intention', 'answer', 'skill', 'severity', 'day', 'focus', or 'tasks'.
 Always provide concrete content for each field. If you cannot extract real values,
 return an empty array for that field (do NOT return arrays of placeholder strings).
 
+=======
+>>>>>>> d4d00cd07d6844c27829c266566da4df1177e742
 Candidate Resume:
 ${resume}
 
@@ -143,7 +146,11 @@ ${jobDescription}
 `
 
     const response=await ai.models.generateContent({
+<<<<<<< HEAD
             model:'gemini-2.5-flash',
+=======
+            model:'gemini-3-flash-preview',
+>>>>>>> d4d00cd07d6844c27829c266566da4df1177e742
             contents:prompt,
             config:{
                 temperature:0,
@@ -178,6 +185,7 @@ ${jobDescription}
         return obj;
     }
 
+<<<<<<< HEAD
     console.log('AI raw response:', response.text);
     const parsed = JSON.parse(response.text);
 
@@ -527,6 +535,11 @@ ${jobDescription}
 
     console.log(JSON.stringify(cleaned, null, 2));
     return cleaned;
+=======
+    const parsed = JSON.parse(response.text);
+    const cleaned = normalize(parsed);
+    console.log(JSON.stringify(cleaned, null, 2));
+>>>>>>> d4d00cd07d6844c27829c266566da4df1177e742
 
 }
 
