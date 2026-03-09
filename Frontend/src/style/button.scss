@@ -9,10 +9,16 @@
     translate: all 1.2s ease-in-out;
 
     &.primary-button{
-        background-color: rgba(80, 199, 15, 0.445);
+        background-color: #134980ae;
+        color: whitesmoke;
     }
 
     &:active{
         transform: scale(1.05);
     }
+}
+
+
+.highlight{
+    color: rgb(36, 133, 75);
 }
