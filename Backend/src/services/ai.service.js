@@ -40,7 +40,9 @@ const interviewReportSchema=z.object({
     focus:z.string().describe("Focus of Preparation for the Day"),
     tasks:z.array(z.string()).describe("List of Tasks to be Completed for the Day")
     }
-)).describe("Preparation Plan for the Interview")
+)).describe("Preparation Plan for the Interview"),
+
+     title:z.string().describe("The title of the job for which the interview report is generated")
 
 
 })
@@ -125,16 +127,15 @@ preparationPlan MUST be:
  { "day": number, "focus": "...", "tasks": ["task1","task2"] }
 ]
 
+title:{title:""}
+
 Return only JSON. Do not convert objects to strings.
 
-<<<<<<< HEAD
 Do NOT output placeholder tokens such as the literal words
 'question', 'intention', 'answer', 'skill', 'severity', 'day', 'focus', or 'tasks'.
 Always provide concrete content for each field. If you cannot extract real values,
 return an empty array for that field (do NOT return arrays of placeholder strings).
 
-=======
->>>>>>> d4d00cd07d6844c27829c266566da4df1177e742
 Candidate Resume:
 ${resume}
 
@@ -526,6 +527,16 @@ ${jobDescription}
         cleaned.skillGaps = fb.skillGaps;
         cleaned.preparationPlan = fb.preparationPlan;
         console.log('Used fallback generation for interview report because AI returned placeholders.');
+    }
+
+    // Ensure a title exists — fall back to jobDescription or a generic title
+    if(!cleaned.title || typeof cleaned.title !== 'string' || cleaned.title.trim() === ''){
+        if(jobDescription && typeof jobDescription === 'string' && jobDescription.trim()){
+            const firstLine = jobDescription.split('\n').find(l=>l && l.trim());
+            cleaned.title = firstLine ? firstLine.slice(0,200).trim() : 'Interview Report';
+        } else {
+            cleaned.title = 'Interview Report';
+        }
     }
 
     console.log(JSON.stringify(cleaned, null, 2));
