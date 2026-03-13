@@ -1,6 +1,7 @@
 const { GoogleGenAI } = require('@google/genai')
 const {z}=require('zod')
 const { zodToJsonSchema } =require("zod-to-json-schema")
+const {puppeteer} =require('puppeteer')
 
 const ai=new GoogleGenAI({
     apiKey:process.env.GOOGLE_GENAI_API_KEY
@@ -544,4 +545,51 @@ ${jobDescription}
 
 }
 
-module.exports=generateInterviewReport
+async function generatePdfFromHtml(htmlContent){
+    const browser=await puppeteer.launch()
+    const page=await browser.newPage()
+    await page.setContent(htmlContent,{waitUntil:"networkidle0"})
+
+    const pageBuffer=await page.pdf({format:"A4"})
+    await browser.close()
+
+    return pageBuffer
+}
+
+
+async function generateResumePdf({resume,jobDescription,selfDescription}){
+        const resumePdfSchema=z.object({
+            html:z.string().describe("The html content of the resume which can be converted to pdf using any library Like puppeteer")
+        })
+
+        const prompt=`
+            generate the resume for a candidate with the following details:
+                Resume:${resume}
+                self Description:${selfDescription}
+                job Description:${jobDescription}
+
+                the response should be a json Object with a single field "HTML" which contains the html content of the following resume which can be converted to be Pdf using any library like puppeteer
+        `
+
+        const response=await ai.models.generateContent({
+            model:"gemini-3-flash-preview",
+            contents:prompt,
+            config:{
+                responseMimeType:'application/json',
+                responseSchema:zodToJsonSchema(resumePdfSchema)
+            }
+
+        })
+
+        const jsonContent= json.parse(response.text)
+
+        const pdfBuffer=await generatePdfFromHtml(jsonContent.html)
+
+        return pdfBuffer
+}
+
+
+module.exports={
+    generateInterviewReport,
+    generateResumePdf
+}
