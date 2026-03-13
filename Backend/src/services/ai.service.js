@@ -397,6 +397,78 @@ ${jobDescription}
     }
 
     cleaned = coerceArrays(cleaned);
+    // Normalize and sanitize skillGaps severities to match the mongoose enum (low, medium, high)
+    function sanitizeSkillGaps(obj){
+        if(!obj || !Array.isArray(obj.skillGaps)) return obj;
+        const allowed = new Set(['low','medium','high']);
+        obj.skillGaps = obj.skillGaps.map(sg=>{
+            if(!sg || typeof sg !== 'object') return null;
+            let skill = (sg.skill || '').toString().trim();
+            let severity = (sg.severity || '').toString().trim().toLowerCase();
+
+            // If AI accidentally swapped fields (severity contains skill token like 'html/...'),
+            // and the skill field contains 'low|medium|high', swap them.
+            if(allowed.has(skill.toLowerCase())){
+                const tmp = skill;
+                skill = severity;
+                severity = tmp.toLowerCase();
+            }
+
+            // Try to extract a valid severity token from the string
+            const m = severity.match(/\b(low|medium|high)\b/i);
+            if(m) severity = m[1].toLowerCase();
+
+            // Fallback to 'medium' when we can't determine severity
+            if(!allowed.has(severity)) severity = 'medium';
+
+            if(!skill) return null;
+            return { skill, severity };
+        }).filter(Boolean);
+        return obj;
+    }
+
+    cleaned = sanitizeSkillGaps(cleaned);
+
+    // Normalize and sanitize preparationPlan entries so `day` is a number
+    function sanitizePreparationPlan(obj){
+        if(!obj || !Array.isArray(obj.preparationPlan)) return obj;
+        const out = [];
+        for(let i=0;i<obj.preparationPlan.length;i++){
+            const it = obj.preparationPlan[i];
+            if(!it || typeof it !== 'object') continue;
+
+            let day = it.day;
+            if(typeof day === 'string'){
+                const m = day.match(/(-?\d+)/);
+                if(m) day = Number(m[1]);
+                else day = null;
+            }
+            if(typeof day !== 'number' || isNaN(day)){
+                day = i+1;
+            }
+
+            let focus = (it.focus || '').toString().trim();
+            if(!focus) focus = `Day ${day}`;
+
+            let tasks = it.tasks;
+            if(typeof tasks === 'string'){
+                const s = tasks.trim();
+                try{
+                    if(s.startsWith('[')) tasks = JSON.parse(s);
+                    else tasks = s.split(',').map(x=>x.trim()).filter(Boolean);
+                }catch(e){
+                    tasks = [s];
+                }
+            }
+            if(!Array.isArray(tasks)) tasks = Array.isArray(tasks) ? tasks : [String(tasks || '')].filter(Boolean);
+
+            out.push({ day, focus, tasks });
+        }
+        obj.preparationPlan = out;
+        return obj;
+    }
+
+    cleaned = sanitizePreparationPlan(cleaned);
     // If AI returned only placeholder/empty arrays, generate a simple fallback
     function generateFallback(jobDesc, resume){
         const jd = (jobDesc||'').toLowerCase();
@@ -528,6 +600,25 @@ ${jobDescription}
         cleaned.skillGaps = fb.skillGaps;
         cleaned.preparationPlan = fb.preparationPlan;
         console.log('Used fallback generation for interview report because AI returned placeholders.');
+    }
+
+    // If specific sections are missing, populate them individually from the fallback.
+    const fbSingle = generateFallback(jobDescription, resume);
+    if(!Array.isArray(cleaned.technicalQuestions) || cleaned.technicalQuestions.length===0){
+        cleaned.technicalQuestions = fbSingle.technicalQuestions;
+        console.log('Filled missing technicalQuestions from fallback.');
+    }
+    if(!Array.isArray(cleaned.behaviouralQuestions) || cleaned.behaviouralQuestions.length===0){
+        cleaned.behaviouralQuestions = fbSingle.behaviouralQuestions;
+        console.log('Filled missing behaviouralQuestions from fallback.');
+    }
+    if(!Array.isArray(cleaned.skillGaps) || cleaned.skillGaps.length===0){
+        cleaned.skillGaps = fbSingle.skillGaps;
+        console.log('Filled missing skillGaps from fallback.');
+    }
+    if(!Array.isArray(cleaned.preparationPlan) || cleaned.preparationPlan.length===0){
+        cleaned.preparationPlan = fbSingle.preparationPlan;
+        console.log('Filled missing preparationPlan from fallback.');
     }
 
     // Ensure a title exists — fall back to jobDescription or a generic title

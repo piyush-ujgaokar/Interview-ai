@@ -14,9 +14,14 @@ async function generateInterviewController(req, res) {
     jobDescription,
   });
 
+  // Ensure we store plain text for resume
+  const resumeText = (resumeContent && (resumeContent.text || typeof resumeContent === 'string'))
+    ? (resumeContent.text || resumeContent)
+    : '';
+
   const interviewReport = await interviewReportModel.create({
     user: req.user.id,
-    resume: resumeContent.text,
+    resume: resumeText,
     selfDescription,
     jobDescription,
     ...interviewReportByAi,
@@ -29,30 +34,29 @@ async function generateInterviewController(req, res) {
 }
 
 async function getInterviewReportByIdController(req, res) {
-  const { interviewId } = req.param;
+  const { interviewId } = req.params;
 
-  const interviewReport = await interviewReportModel.create({
+  if (!interviewId) {
+    return res.status(400).json({ message: "interviewId is required" });
+  }
+
+  const interviewReport = await interviewReportModel.findOne({
     _id: interviewId,
     user: req.user.id,
   });
 
   if (!interviewReport) {
-    return res.status(404).json({
-      message: "Interview report not found",
-    });
+    return res.status(404).json({ message: "Interview report not found" });
   }
 
-  res.status(200).json({
-    message: "Interview report fetched successfully",
-    interviewReport,
-  });
+  res.status(200).json({ message: "Interview report fetched successfully", interviewReport });
 }
 
 async function getAllInterviewReportController(req, res) {
   const interviewReports = await interviewReportModel.find({
       user: req.user.id,
     }).sort({ createdAt: -1 }).select(
-      "resume -selfDescription -jobDescription -__v -technicalQuestions -behaviouralQuestions -skillgaps -preparationPlan",
+      "-resume -selfDescription -jobDescription -__v",
     );
 
     res.status(200).json({
