@@ -14,6 +14,21 @@ async function generateInterviewController(req, res) {
     jobDescription,
   });
 
+  // Normalize AI output: ensure fields that must be arrays of objects are valid
+  function normalizeArrayField(value){
+    if(Array.isArray(value)) return value.filter(v=>v && typeof v === 'object');
+    if(typeof value === 'string'){
+      try{ const parsed = JSON.parse(value); if(Array.isArray(parsed)) return parsed.filter(v=>v && typeof v === 'object'); }catch(e){}
+      return [];
+    }
+    return [];
+  }
+
+  interviewReportByAi.technicalQuestions = normalizeArrayField(interviewReportByAi.technicalQuestions);
+  interviewReportByAi.behaviouralQuestions = normalizeArrayField(interviewReportByAi.behaviouralQuestions);
+  interviewReportByAi.skillGaps = normalizeArrayField(interviewReportByAi.skillGaps);
+  interviewReportByAi.preparationPlan = normalizeArrayField(interviewReportByAi.preparationPlan);
+
   // Ensure we store plain text for resume
   const resumeText = (resumeContent && (resumeContent.text || typeof resumeContent === 'string'))
     ? (resumeContent.text || resumeContent)
